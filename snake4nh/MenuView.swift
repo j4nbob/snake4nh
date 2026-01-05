@@ -75,7 +75,7 @@ struct MenuView: View {
                     .foregroundColor(.white.opacity(0.7))
                     .padding(.bottom, 5)
         
-                Text("mmmguitars - 01.04.2026")
+                Text("mmmguitars - 01.05.2026")
                     .font(.system(size: 12))
                     .foregroundColor(.white.opacity(0.7))
                     .padding(.bottom, 5)

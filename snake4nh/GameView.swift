@@ -22,15 +22,19 @@ struct GameView: View {
         self._currentView = currentView
         self.difficulty = difficulty
         
-        // Initialize the game scene
-        let scene = GameScene(size: CGSize(width: 400, height: 600))
-        scene.scaleMode = .aspectFill
+        // Initialize the game scene with square dimensions
+        let scene = GameScene(size: CGSize(width: 400, height: 400))
+        scene.scaleMode = .aspectFit
         scene.setSpeed(difficulty.speed)
         self.gameScene = scene
     }
     
     var body: some View {
         GeometryReader { geometry in
+            let availableHeight = geometry.size.height - 60 - 140 // Subtract header and controls
+            let availableWidth = geometry.size.width - 20 // Account for any padding/margins
+            let sceneSize = min(availableWidth, availableHeight)
+            
             ZStack {
                 Color.black.ignoresSafeArea()
                 
@@ -61,12 +65,17 @@ struct GameView: View {
                     .padding()
                     //.background(Color.gray.opacity(0.3))
                     
+                    Spacer()
+                    
                     // Game scene
                     SpriteView(scene: gameScene)
-                        .frame(height: geometry.size.height - 180)
+                        .frame(width: sceneSize, height: sceneSize)
+                        .clipped()
                         .onAppear {
                             setupSceneCallbacks()
                         }
+                    
+                    Spacer()
                     
                     // Control buttons or Game Over buttons
                     VStack(spacing: 20) {
@@ -89,24 +98,26 @@ struct GameView: View {
                             .padding(.top, 40)
                         } else {
                             // Direction buttons
-                            DirectionButton(direction: "↑", color: .blue) {
-                                gameScene.changeDirection(to: .up)
-                            }
-                            
-                            HStack(spacing: 40) {
-                                DirectionButton(direction: "←", color: .blue) {
-                                    gameScene.changeDirection(to: .left)
-                                }
-                                .offset(y: -40)
-                                
-                                DirectionButton(direction: "↓", color: .blue) {
-                                    gameScene.changeDirection(to: .down)
+                            HStack(spacing: 80) {
+                                VStack(spacing: 20) {
+                                    DirectionButton(direction: "↑", color: .blue) {
+                                        gameScene.changeDirection(to: .up)
+                                    }
+                                    
+                                    DirectionButton(direction: "↓", color: .blue) {
+                                        gameScene.changeDirection(to: .down)
+                                    }
                                 }
                                 
-                                DirectionButton(direction: "→", color: .blue) {
-                                    gameScene.changeDirection(to: .right)
+                                VStack(spacing: 20) {
+                                    DirectionButton(direction: "←", color: .blue) {
+                                        gameScene.changeDirection(to: .left)
+                                    }
+                                    
+                                    DirectionButton(direction: "→", color: .blue) {
+                                        gameScene.changeDirection(to: .right)
+                                    }
                                 }
-                                .offset(y: -40)
                             }
                         }
                     }
@@ -161,9 +172,9 @@ struct DirectionButton: View {
             Text(direction)
                 .font(.system(size: 36, weight: .bold))
                 .foregroundColor(.white)
-                .frame(width: 70, height: 70)
+                .frame(width: 150, height: 70)
                 .background(
-                    Circle()
+                    RoundedRectangle(cornerRadius: 12)
                         .fill(color)
                         .shadow(radius: 5)
                 )

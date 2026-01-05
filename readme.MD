@@ -24,5 +24,10 @@ The core classics are included : Guide your snake around the playing field, eat 
 ![Game Over](md-03.png)
 ![Hall of Fame](md-04.png)
 
+## Versions
+
+- **01.05.2026**: kids wanted to play with two thumbs and i had to re-arrange the control buttons
+- **01.06.2026**: inital release
+
 ---
-**mmmguitars - 01.04.2026**
+**mmmguitars - 01.05.2026**

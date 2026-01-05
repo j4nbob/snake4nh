@@ -17,7 +17,7 @@ class GameScene: SKScene {
     var food: SKShapeNode?
     var direction: Direction = .right
     var nextDirection: Direction = .right
-    var gameSpeed: TimeInterval = 0.15
+    var gameSpeed: TimeInterval = 0.2
     var lastUpdateTime: TimeInterval = 0
     var score: Int = 0
     var isGameOver: Bool = false
@@ -28,32 +28,37 @@ class GameScene: SKScene {
     let cellSize: CGFloat = 20
     var gridWidth: Int = 0
     var gridHeight: Int = 0
+    var offsetX: CGFloat = 0
+    var offsetY: CGFloat = 0
     
     func drawWalls() {
-        let wallThickness: CGFloat = 6
-        let sideThickness: CGFloat = 2
+        let wallThickness: CGFloat = 3
+        let sideThickness: CGFloat = 1
+        
+        let playAreaWidth = CGFloat(gridWidth) * cellSize
+        let playAreaHeight = CGFloat(gridHeight) * cellSize
         
         // Top wall
-        let topWall = SKSpriteNode(color: .gray, size: CGSize(width: size.width, height: wallThickness))
-        topWall.position = CGPoint(x: size.width / 2, y: size.height - wallThickness / 2)
+        let topWall = SKSpriteNode(color: .gray, size: CGSize(width: playAreaWidth, height: wallThickness))
+        topWall.position = CGPoint(x: offsetX + playAreaWidth / 2, y: offsetY + playAreaHeight - wallThickness / 2)
         topWall.zPosition = 10
         addChild(topWall)
         
         // Bottom wall
-        let bottomWall = SKSpriteNode(color: .gray, size: CGSize(width: size.width, height: wallThickness))
-        bottomWall.position = CGPoint(x: size.width / 2, y: wallThickness / 2)
+        let bottomWall = SKSpriteNode(color: .gray, size: CGSize(width: playAreaWidth, height: wallThickness))
+        bottomWall.position = CGPoint(x: offsetX + playAreaWidth / 2, y: offsetY + wallThickness / 2)
         bottomWall.zPosition = 10
         addChild(bottomWall)
         
         // Left wall
-        let leftWall = SKSpriteNode(color: .gray, size: CGSize(width: sideThickness, height: size.height))
-        leftWall.position = CGPoint(x: sideThickness / 2, y: size.height / 2)
+        let leftWall = SKSpriteNode(color: .gray, size: CGSize(width: sideThickness, height: playAreaHeight))
+        leftWall.position = CGPoint(x: offsetX + sideThickness / 2, y: offsetY + playAreaHeight / 2)
         leftWall.zPosition = 10
         addChild(leftWall)
         
         // Right wall
-        let rightWall = SKSpriteNode(color: .gray, size: CGSize(width: sideThickness, height: size.height))
-        rightWall.position = CGPoint(x: size.width - sideThickness / 2, y: size.height / 2)
+        let rightWall = SKSpriteNode(color: .gray, size: CGSize(width: sideThickness, height: playAreaHeight))
+        rightWall.position = CGPoint(x: offsetX + playAreaWidth - sideThickness / 2, y: offsetY + playAreaHeight / 2)
         rightWall.zPosition = 10
         addChild(rightWall)
     }
@@ -74,9 +79,17 @@ class GameScene: SKScene {
         view.isPaused = false
         view.preferredFramesPerSecond = 60
         
-        // Calculate grid dimensions
-        gridWidth = Int(size.width / cellSize)
-        gridHeight = Int(size.height / cellSize)
+        // Calculate square grid dimensions based on smaller dimension
+        let smallerDimension = min(size.width, size.height)
+        let gridSize = Int(smallerDimension / cellSize)
+        gridWidth = gridSize
+        gridHeight = gridSize
+        
+        // Calculate offsets to center the play area
+        let playAreaWidth = CGFloat(gridWidth) * cellSize
+        let playAreaHeight = CGFloat(gridHeight) * cellSize
+        offsetX = (size.width - playAreaWidth) / 2
+        offsetY = (size.height - playAreaHeight) / 2
         
         drawWalls()
         setupGame()
@@ -142,14 +155,14 @@ class GameScene: SKScene {
     }
     
     func gridToPoint(x: Int, y: Int) -> CGPoint {
-        let pointX = CGFloat(x) * cellSize + cellSize / 2
-        let pointY = CGFloat(y) * cellSize + cellSize / 2
+        let pointX = CGFloat(x) * cellSize + cellSize / 2 + offsetX
+        let pointY = CGFloat(y) * cellSize + cellSize / 2 + offsetY
         return CGPoint(x: pointX, y: pointY)
     }
     
     func pointToGrid(_ point: CGPoint) -> (Int, Int) {
-        let x = Int(point.x / cellSize)
-        let y = Int(point.y / cellSize)
+        let x = Int((point.x - offsetX) / cellSize)
+        let y = Int((point.y - offsetY) / cellSize)
         return (x, y)
     }
     
